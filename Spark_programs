@@ -1,0 +1,44 @@
+Problem 1.1
+Question: Cube each number in RDD using map.
+
+Code:
+from pyspark.sql import SparkSession
+spark = SparkSession.builder.appName("Problem1_1").getOrCreate()
+sc = spark.sparkContext
+rdd = sc.parallelize([1, 2, 3, 4, 5])
+result = rdd.map(lambda x: x ** 3)
+print(result.collect())
+Output: [1, 8, 27, 64, 125]
+
+Problem 1.2
+Question: Split sentences into words using flatMap.
+
+Code:
+rdd = sc.parallelize(["Hello World", "Apache Spark", "Big Data"])
+result = rdd.flatMap(lambda x: x.split(" "))
+print(result.collect())
+Output: ['Hello', 'World', 'Apache', 'Spark', 'Big', 'Data']
+
+Problem 1.3
+Question: Filter numbers divisible by 3 from 1 to 20.
+
+Code:
+rdd = sc.parallelize(range(1, 21))
+result = rdd.filter(lambda x: x % 3 == 0)
+print(result.collect())
+Output: [3, 6, 9, 12, 15, 18]
+
+Problem 1.4
+Question: Word count on "spark is fast spark is big spark is powerful".
+
+Code:
+text = "spark is fast spark is big spark is powerful"
+rdd = sc.parallelize([text])
+result = (
+    rdd
+    .flatMap(lambda x: x.split(" "))
+    .map(lambda word: (word, 1))
+    .reduceByKey(lambda a, b: a + b)
+)
+print(result.collect())
+Output: [('spark', 3), ('is', 3), ('fast', 1), ('big', 1), ('powerful', 1)]
