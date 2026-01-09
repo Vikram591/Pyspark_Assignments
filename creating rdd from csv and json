@@ -1,0 +1,84 @@
+1. How to create RDD from JSON?
+=> Example JSON file (Vik.json)
+{"id":1,"name":"Alice","age":25}
+{"id":2,"name":"Bob","age":30}
+{"id":3,"name":"Charlie","age":28}
+
+Firstly, Read JSON as a text RDD
+rdd = sc.textFile("Vik.json")
+
+And, Parse JSON into structured objects
+import json
+json_rdd = rdd.map(lambda x: json.loads(x))
+
+Each element is a Python dictionary:
+
+{'id': 1, 'name': 'Alice', 'age': 25}
+(We have structure, Spark will not enforce schema.
+
+
+2. How to create RDD from CSV?
+Example CSV file (Vik.csv)
+id,name,age
+1,Alice,25
+2,Bob,30
+3,Charlie,28
+
+ 1: Read CSV as text
+rdd = sc.textFile("Vik.csv")
+
+Each line is a string:
+
+"1,Alice,25"
+
+2: Remove header
+header = rdd.first()
+data_rdd = rdd.filter(lambda line: line != header)
+
+ 3: Split and convert types
+csv_rdd = data_rdd.map(lambda x: x.split(",")) \
+                  .map(lambda x: (int(x[0]), x[1], int(x[2])))
+
+Now you have:
+(1, "Alice", 25)
+
+3.How to create schema when we are creating RDD?
+=> In Apache Spark, RDDs do not support schema natively.
+An RDD is a distributed collection of objects and is schema-less by design.
+=>Real schema is supported only in dataframes.
+
+Example
+rdd = sc.parallelize([
+    (1, "Alice", 25),
+    (2, "Bob", 30)
+])
+Here we assume:
+first value → id
+second value → name
+third value → age
+But Spark does not know this.
+It only sees tuples, not columns or data types.
+Real schema exists only when an RDD is converted to a DataFrame.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
